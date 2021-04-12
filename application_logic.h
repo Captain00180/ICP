@@ -21,6 +21,12 @@ public:
 
     int create_con_opts();
 
+    void delete_client();
+
+    void delete_callback();
+
+    void delete_con_opts();
+
     int connect();
 
     int disconnect();
@@ -32,6 +38,8 @@ public:
     int publish(const std::string& topic, const std::string& payload);
 
     application_logic();
+
+    ~application_logic();
 
 
 };

@@ -5,25 +5,40 @@
 #include "application_logic.h"
 
 int application_logic::create_client(const std::string &server, const std::string &clientID) {
-    if (active_client_ != nullptr)
-        delete active_client_;
+    delete_client();
     active_client_ = new mqtt::async_client(server, clientID);
     return 0;
 }
 
 int application_logic::create_callback() {
-    if (active_callback_ != nullptr)
-        delete active_callback_;
+    delete_callback();
     active_callback_ = new action_callback(*active_client_);
     active_client_->set_callback(*active_callback_);
     return 0;
 }
 
 int application_logic::create_con_opts() {
-    if (active_con_opts != nullptr)
-        delete active_con_opts;
+    delete_con_opts();
     active_con_opts = new mqtt::connect_options;
     return 0;
+}
+
+void application_logic::delete_client() {
+    if (active_client_ != nullptr)
+        delete active_client_;
+    active_client_ = nullptr;
+}
+
+void application_logic::delete_callback() {
+    if (active_callback_ != nullptr)
+        delete active_callback_;
+    active_callback_ = nullptr;
+}
+
+void application_logic::delete_con_opts() {
+    if (active_con_opts != nullptr)
+        delete active_con_opts;
+    active_con_opts = nullptr;
 }
 
 int application_logic::connect() {
@@ -42,12 +57,6 @@ int application_logic::disconnect() {
     std::cout << "Disconnecting from the MQTT server..." << std::endl << std::flush;
     active_client_->disconnect()->wait();
     std::cout << "Disconnect succesful" << std::endl;
-    if (active_client_ != nullptr)
-        delete active_client_;
-    if (active_callback_ != nullptr)
-        delete active_callback_;
-    if (active_con_opts != nullptr)
-        delete active_con_opts;
     return 0;
 }
 
@@ -71,4 +80,10 @@ application_logic::application_logic() {
     active_client_ = nullptr;
     active_callback_ = nullptr;
     active_con_opts = nullptr;
+}
+
+application_logic::~application_logic() {
+    delete_callback();
+    delete_con_opts();
+    delete_client();
 }

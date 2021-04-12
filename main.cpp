@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
     app.subscribe("icp_test");
     app.publish("icp_test", "Hello, world!");
 
+    app.unsubscribe("icp_test");
     app.disconnect();
-
 
     return 0;
 }
