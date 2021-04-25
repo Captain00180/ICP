@@ -5,7 +5,7 @@
 #ifndef ICP_APPLICATION_LOGIC_H
 #define ICP_APPLICATION_LOGIC_H
 
-#include "paho_mqtt/async_client.h" //!!! Set to your path to your pacho library
+#include "mqtt/async_client.h" //!!! Set to your path to your pacho library
 #include "action_callback.h"
 
 class application_logic {

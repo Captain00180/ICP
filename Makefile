@@ -1,17 +1,10 @@
-CXX = g++
-CXXFLAGS = -pedantic -g -Wall -Wextra -std=c++17
+build: src/gui/MQTT_Explorer.pro
+	cd src/gui; qmake-qt5 -o Makefile-gui; make -f Makefile-gui
+# WARNING - "qmake-qt5" command must be changed to the system's version of qmake
 
-all: main
+run: build 
+	src/gui/MQTT_Explorer
 
-main: main.cpp action_callback.o application_logic.o Makefile
-	$(CXX) $(CXXFLAGS) main.cpp action_callback.o application_logic.o -o main -lpthread -lpaho-mqttpp3 -lpaho-mqtt3as
+clean: 
+	cd src/gui; make -f Makefile-gui clean; rm Makefile-gui; rm .qmake.stash; rm MQTT_Explorer
 
-action_callback: action_callback.cpp action_callback.h
-	$(CXX) $(CXXFLAGS) action_callback.cpp -c -lpthread -lpaho-mqttpp3 -lpaho-mqtt3as
-
-
-application_logic: application_logic.cpp application_logic.h
-	$(CXX) $(CXXFLAGS) application_logic.cpp -c -lpthread -lpaho-mqttpp3 -lpaho-mqtt3as
-
-clean:
-	rm main ./*.o

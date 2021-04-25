@@ -5,6 +5,8 @@
 #include <QButtonGroup>
 #include "connectedwindow.h"
 
+#include "../application_logic.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -26,6 +28,7 @@ public:
     void connectWindow();
 
 private:
+    application_logic app;
     Ui::MainWindow *ui;
     QButtonGroup* savedConnections;
     ConnectedWindow* connectedWindow;

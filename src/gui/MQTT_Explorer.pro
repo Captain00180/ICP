@@ -1,8 +1,10 @@
-QT       += core gui
+QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++17
+
+LIBS += -lpthread -lpaho-mqttpp3 -lpaho-mqtt3as
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -12,12 +14,18 @@ SOURCES += \
     connectedwindow.cpp \
     main.cpp \
     mainwindow.cpp \
-    publishmessage.cpp
+    publishmessage.cpp \
+    ../action_callback.cpp \
+    ../application_logic.cpp
+
 
 HEADERS += \
     connectedwindow.h \
     mainwindow.h \
-    publishmessage.h
+    publishmessage.h \
+    ../action_callback.h \
+    ../application_logic.h
+
 
 FORMS += \
     connectedwindow.ui \

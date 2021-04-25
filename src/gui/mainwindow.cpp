@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     savedConnections->setExclusive(true);
 
     ui->text_error->hide();
+
 
 
 }
@@ -81,6 +83,12 @@ void MainWindow::connectWindow()
     }
     else
         ui->text_error->hide();
+
+    app.create_client(serverName.toUtf8().constData(), "RandomICPId");
+    app.create_con_opts();
+    app.create_callback();
+    app.connect();
+
 
     connectedWindow = new ConnectedWindow(ui->input_ServerName->text());
     this->hide();
