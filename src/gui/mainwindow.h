@@ -6,6 +6,7 @@
 #include "connectedwindow.h"
 
 #include "../application_logic.h"
+#include "../action_callback.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,6 +27,11 @@ public:
     void onSelectSaved();
 
     void connectWindow();
+
+/*
+public slots:
+    void failedToConnect();
+*/
 
 private:
     application_logic app;

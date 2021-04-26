@@ -10,14 +10,27 @@ action_callback::action_callback(mqtt::async_client &client)
 
 void action_callback::on_success(const mqtt::token &tok){
     std::cout << "Action '" << tok.get_type() << "' Successful!" << std::endl;
+    switch (tok.get_type()) {
+        case mqtt::token::SUBSCRIBE:
+            emit subscribe_success();
+            return;
+        default:
+            return;
+
+    }
 }
 
 void action_callback::on_failure(const mqtt::token &tok){
     std::cout << "ERROR: Action '" << tok.get_type() << "' Failed!" << std::endl;
-    if (tok.get_type() == 0)
-    {
-        exit(1);
+    switch (tok.get_type()) {
+        case mqtt::token::SUBSCRIBE:
+            emit subscribe_failed();
+            return;
+        default:
+            return;
+
     }
+    //emit connection_failed();
 }
 
 void action_callback::connected(const std::string &cause) {
@@ -40,7 +53,12 @@ void action_callback::message_arrived(mqtt::const_message_ptr msg) {
         std::cout << "\tTopic: " << msg->get_topic() << std::endl;
         std::cout << "\tPayload: " << msg->get_payload() << std::endl;
     }
+    const std::string topic_name = msg->get_topic();
+    const std::string payload = msg->get_payload_str();
+    emit message_received(topic_name, payload);
+
 }
+
 
 void action_callback::delivery_complete(mqtt::delivery_token_ptr tok) {
     std::cout << "Message '" << tok->get_message() << "' delivered!" << std::endl;

@@ -26,9 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     savedConnections->setExclusive(true);
 
     ui->text_error->hide();
-
-
-
 }
 
 MainWindow::~MainWindow()
@@ -87,10 +84,18 @@ void MainWindow::connectWindow()
     app.create_client(serverName.toUtf8().constData(), "RandomICPId");
     app.create_con_opts();
     app.create_callback();
-    app.connect();
-
-
-    connectedWindow = new ConnectedWindow(ui->input_ServerName->text());
+/*
+    QObject::connect(
+            app.active_callback_, &action_callback::connection_failed,
+            this, &MainWindow::failedToConnect
+    );
+*/
+    if (app.connect() != 0){
+        ui->text_error->setText("Couldn't establish connection");
+        ui->text_error->show();
+        return;
+    }
+    connectedWindow = new ConnectedWindow(ui->input_ServerName->text(), app, nullptr    );
     this->hide();
     connectedWindow->show();
 

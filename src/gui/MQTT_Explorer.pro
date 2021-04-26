@@ -16,7 +16,8 @@ SOURCES += \
     mainwindow.cpp \
     publishmessage.cpp \
     ../action_callback.cpp \
-    ../application_logic.cpp
+    ../application_logic.cpp \
+    ../topic.cpp
 
 
 HEADERS += \
@@ -24,7 +25,8 @@ HEADERS += \
     mainwindow.h \
     publishmessage.h \
     ../action_callback.h \
-    ../application_logic.h
+    ../application_logic.h \
+    ../topic.h
 
 
 FORMS += \

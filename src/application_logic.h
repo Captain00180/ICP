@@ -5,15 +5,21 @@
 #ifndef ICP_APPLICATION_LOGIC_H
 #define ICP_APPLICATION_LOGIC_H
 
-#include "mqtt/async_client.h" //!!! Set to your path to your pacho library
+#include <map>
+
+#include "mqtt/async_client.h"
 #include "action_callback.h"
+#include "topic.h"
 
 class application_logic {
+
+
+public:
     mqtt::async_client* active_client_;
     action_callback* active_callback_;
     mqtt::connect_options* active_con_opts;
 
-public:
+    std::vector<topic*> subscribed_topics;
 
     int create_client(const std::string& server, const std::string& clientID);
 
@@ -34,6 +40,10 @@ public:
     int subscribe(const std::string& topic);
 
     int unsubscribe(const std::string& topic);
+
+    void add_topic(const std::string& name);
+
+    bool topic_subscribed(const std::string& name);
 
     int publish(const std::string& topic, const std::string& payload);
 
