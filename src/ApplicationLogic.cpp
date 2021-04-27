@@ -1,7 +1,6 @@
 /********************************************************
  * @file ApplicationLogic.cpp
- * @brief Implements the ApplicationLogic class
- * This file contains the
+ * @brief Implementation of  the ApplicationLogic class
  */
 #include "ApplicationLogic.h"
 

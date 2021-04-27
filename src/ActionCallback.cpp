@@ -1,6 +1,7 @@
-//
-// Created by filipjanuska on 4/11/21.
-//
+/**
+ * @file ActionCallback.cpp
+ * @brief Implementation of the ActionCallback class
+ */
 
 #include "ActionCallback.h"
 
