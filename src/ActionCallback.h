@@ -10,7 +10,7 @@
 #include "mqtt/async_client.h"
 
 
-class action_callback : public QObject, public virtual mqtt::callback, public virtual mqtt::iaction_listener{
+class ActionCallback : public QObject, public virtual mqtt::callback, public virtual mqtt::iaction_listener{
     Q_OBJECT
     mqtt::async_client& client_;
 
@@ -33,7 +33,7 @@ signals:
     void message_received(const std::string topic_name, const std::string payload);
 
 public:
-    action_callback(mqtt::async_client& client);
+    ActionCallback(mqtt::async_client& client);
 
     bool print_messages = true;
 

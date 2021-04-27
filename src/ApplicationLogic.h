@@ -8,15 +8,15 @@
 #include <map>
 
 #include "mqtt/async_client.h"
-#include "action_callback.h"
+#include "ActionCallback.h"
 #include "topic.h"
 
-class application_logic {
+class ApplicationLogic {
 
 
 public:
     mqtt::async_client* active_client_;
-    action_callback* active_callback_;
+    ActionCallback* active_callback_;
     mqtt::connect_options* active_con_opts;
 
     std::vector<topic*> subscribed_topics;
@@ -47,9 +47,9 @@ public:
 
     int publish(const std::string& topic, const std::string& payload);
 
-    application_logic();
+    ApplicationLogic();
 
-    ~application_logic();
+    ~ApplicationLogic();
 
 
 };

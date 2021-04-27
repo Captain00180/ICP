@@ -15,8 +15,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     publishmessage.cpp \
-    ../action_callback.cpp \
-    ../application_logic.cpp \
+    ../ActionCallback.cpp \
+    ../ApplicationLogic.cpp \
     ../topic.cpp
 
 
@@ -24,8 +24,8 @@ HEADERS += \
     connectedwindow.h \
     mainwindow.h \
     publishmessage.h \
-    ../action_callback.h \
-    ../application_logic.h \
+    ../ActionCallback.h \
+    ../ApplicationLogic.h \
     ../topic.h
 
 

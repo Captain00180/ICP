@@ -1,7 +1,7 @@
 #include "connectedwindow.h"
 #include "ui_connectedwindow.h"
 
-ConnectedWindow::ConnectedWindow(QString serverName, application_logic& appLogic, QWidget *parent) :
+ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ConnectedWindow)
 {
@@ -25,11 +25,11 @@ ConnectedWindow::ConnectedWindow(QString serverName, application_logic& appLogic
             this, &ConnectedWindow::subscribe);
 
     QObject::connect(
-            app.active_callback_, &action_callback::subscribe_failed,
+            app.active_callback_, &ActionCallback::subscribe_failed,
             this, &ConnectedWindow::subscribeFailed);
 
     QObject::connect(
-            app.active_callback_, &action_callback::subscribe_success,
+            app.active_callback_, &ActionCallback::subscribe_success,
             this, &ConnectedWindow::subscribeSuccess);
 
     QObject::connect(

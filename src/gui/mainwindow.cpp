@@ -86,7 +86,7 @@ void MainWindow::connectWindow()
     app.create_callback();
 /*
     QObject::connect(
-            app.active_callback_, &action_callback::connection_failed,
+            app.active_callback_, &ActionCallback::connection_failed,
             this, &MainWindow::failedToConnect
     );
 */

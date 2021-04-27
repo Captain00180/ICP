@@ -5,8 +5,8 @@
 #include <QButtonGroup>
 #include "connectedwindow.h"
 
-#include "../application_logic.h"
-#include "../action_callback.h"
+#include "../ApplicationLogic.h"
+#include "../ActionCallback.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -34,7 +34,7 @@ public slots:
 */
 
 private:
-    application_logic app;
+    ApplicationLogic app;
     Ui::MainWindow *ui;
     QButtonGroup* savedConnections;
     ConnectedWindow* connectedWindow;

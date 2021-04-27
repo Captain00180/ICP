@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QTreeWidget>
 #include "publishmessage.h"
-#include "../application_logic.h"
-#include "../action_callback.h"
+#include "../ApplicationLogic.h"
+#include "../ActionCallback.h"
 
 namespace Ui {
 class ConnectedWindow;
@@ -16,7 +16,7 @@ class ConnectedWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    ConnectedWindow(QString serverName, application_logic& appLogic, QWidget *parent);
+    ConnectedWindow(QString serverName, ApplicationLogic& appLogic, QWidget *parent);
     ~ConnectedWindow();
 
     void publishMessage();
@@ -33,7 +33,7 @@ public slots:
 private:
     Ui::ConnectedWindow *ui;
     PublishMessage* publishMessageWindow;
-    application_logic app;
+    ApplicationLogic app;
 };
 
 #endif // CONNECTEDWINDOW_H
