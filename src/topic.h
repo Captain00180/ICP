@@ -11,7 +11,7 @@
 class topic {
 public:
     std::string name;
-    std::vector<std::string> history;
+    std::vector<std::pair<std::string, std::string>> history;
 
     topic(const std::string& name_);
 

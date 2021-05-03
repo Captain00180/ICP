@@ -1,6 +1,7 @@
 #ifndef CONNECTEDWINDOW_H
 #define CONNECTEDWINDOW_H
 
+#include <ctime>
 #include <QMainWindow>
 #include <QTreeWidget>
 #include "publishmessage.h"
@@ -24,6 +25,8 @@ public:
     void subscribe();
 
     void addTopic(const std::string& name);
+
+    void topicSelected();
 
 public slots:
     void subscribeSuccess();

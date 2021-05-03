@@ -10,4 +10,3 @@ run: build
 clean: 
 	cd src/gui; make -f Makefile-main clean; rm Makefile-main; rm .qmake.stash; rm MQTT_Explorer
 	cd src/traffic_simulator; make -f Makefile-sim clean; rm Makefile-sim; rm .qmake.stash; rm traffic_simulator
-

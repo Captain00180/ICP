@@ -13,6 +13,8 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
 
     ui->topicsTree->setHeaderHidden(true);
     ui->topicsTree->setColumnCount(2);
+    ui->topicsTree->header()->setStretchLastSection(false);
+    ui->topicsTree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
 
     QObject::connect(
@@ -25,6 +27,11 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
             this, &ConnectedWindow::subscribe);
 
     QObject::connect(
+            ui->topicsTree, &QTreeWidget::itemClicked,
+            this, &ConnectedWindow::topicSelected
+    );
+
+    QObject::connect(
             app.active_callback_, &ActionCallback::subscribe_failed,
             this, &ConnectedWindow::subscribeFailed);
 
@@ -35,6 +42,8 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
     QObject::connect(
             app.active_callback_, SIGNAL(message_received(const std::string, const std::string)),
             this, SLOT(displayMessage(const std::string, const std::string)));
+
+
 
     qRegisterMetaType<std::string>("std::string");
 
@@ -58,6 +67,7 @@ void ConnectedWindow::subscribe() {
 void ConnectedWindow::addTopic(const std::string& name) {
     QTreeWidgetItem* topic = new QTreeWidgetItem(ui->topicsTree);
     topic->setText(0, QString::fromStdString(name));
+
     topic->setText(1, "Hello");
     ui->topicsTree->addTopLevelItem(topic);
     QTreeWidgetItem* child = new QTreeWidgetItem(topic);
@@ -65,27 +75,143 @@ void ConnectedWindow::addTopic(const std::string& name) {
     topic->addChild(child);
     ui->topicsTree->resizeColumnToContents(0);
 
+    QObject::connect(
+            ui->topicsTree, &QTreeWidget::itemClicked,
+            this, &ConnectedWindow::topicSelected
+            );
+
+
+}
+
+void ConnectedWindow::topicSelected() {
+    QTreeWidgetItem* topic = ui->topicsTree->currentItem();
+
+    QString top_name = topic->text(0);
+
+    ui->text_TopicDetail->setText(top_name);
+
+    std::vector<std::pair<std::string, std::string>> topic_history = app.get_topic_history(top_name.toStdString());
+    ui->topicHistory->clear();
+    for (auto i : topic_history)
+    {
+        auto timestamp = QString::fromStdString(i.first).simplified();
+        QStringList timestampSplit = timestamp.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+        auto payload = QString::fromStdString(i.second);
+        ui->topicHistory->addItem(timestampSplit[3] + ": " + payload);
+    }
+
 }
 
 void ConnectedWindow::displayMessage(const std::string topic_name, const std::string payload) {
-    QList<QTreeWidgetItem*> clist = ui->topicsTree->findItems(QString::fromStdString(topic_name), Qt::MatchContains|Qt::MatchRecursive, 0);
-    std::cout << "FRONTEND: " << topic_name << " : " << payload << std::endl;
-    if (clist.length() != 0)
+    /*QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(QString::fromStdString(topic_name), Qt::MatchContains|Qt::MatchRecursive, 0);
+    if (topList.length() != 0)
     {
 
-        clist[0]->setText(1, QString::fromStdString(payload));
+        topList[0]->setText(1, QString::fromStdString(payload));
     }
+    app.add_topic_message(topic_name, payload);
+    */
+    QString topicPath = QString::fromStdString(topic_name);
+    if (topicPath.isEmpty())
+    {
+        return;
+    }
+    QStringList topicNameList = topicPath.split(QRegExp("/"), Qt::SkipEmptyParts);
+    QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(topicNameList[0], Qt::MatchExactly, 0);
+
+    QTreeWidgetItem* root = topList[0];
+    int levelIndex = 1;
+    int childIndex = 0;
+
+    while (levelIndex < topicNameList.length() &&  childIndex < root->childCount())
+    {
+        auto kid = root->child(childIndex);
+        if (kid->text(0) == topicNameList[levelIndex])
+        {
+            root = kid;
+            childIndex = 0;
+            levelIndex++;
+        }
+        else
+        {
+            childIndex++;
+        }
+    }
+    if (levelIndex == topicNameList.length())
+    {
+        root->setText(1, QString::fromStdString(payload));
+        app.add_topic_message(topic_name, payload);
+    }
+
 }
 
 void ConnectedWindow::subscribeSuccess()
 {
-    std::string topicName = ui->input_topic->text().toUtf8().constData();
-    if (!app.topic_subscribed(topicName))
+    QString topicPath = ui->input_topic->text();
+    if (topicPath.isEmpty())
     {
-        std::cerr << "Adding topic\n";
-        app.add_topic(topicName);
-        addTopic(topicName);
+        return;
     }
+
+    QStringList topicNameList = topicPath.split(QRegExp("/"), Qt::SkipEmptyParts);
+    for (auto i : topicNameList)
+    {
+        std::cerr << i.toStdString() << "__";
+    }
+    std::cerr << std::endl;
+    QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(topicNameList[0], Qt::MatchExactly, 0);
+
+    QTreeWidgetItem* root = nullptr;
+    int levelIndex = 1;
+
+    if (!topList.isEmpty())
+    {
+
+        root = topList[0];
+        std::cerr << "Top level root already present - " << root->text(0).toStdString() << std::endl;
+        int childIndex = 0;
+
+        while (levelIndex < topicNameList.length() &&  childIndex < root->childCount())
+        {
+
+            auto kid = root->child(childIndex);
+            std::cerr << "Checking child " << kid->text(0).toStdString() << std::endl;
+            if (kid->text(0) == topicNameList[levelIndex])
+            {
+                std::cerr << "Match found: " << kid->text(0).toStdString() << std::endl;
+                root = kid;
+                childIndex = 0;
+                levelIndex++;
+            }
+            else
+            {
+                childIndex++;
+            }
+        }
+        if (levelIndex == topicNameList.length())
+        {   // topic tree is already created - nothing to do
+            return;
+        }
+    }
+    else
+    {
+        // Create a top level root item
+        root = new QTreeWidgetItem(ui->topicsTree);
+        root->setText(0, topicNameList[0]);
+        ui->topicsTree->addTopLevelItem(root);
+    }
+
+    QTreeWidgetItem* new_child = nullptr;
+    for (; levelIndex < topicNameList.length(); levelIndex++)
+    {
+        new_child = new QTreeWidgetItem(root);
+        new_child->setText(0, topicNameList[levelIndex]);
+        root->addChild(new_child);
+        root = new_child;
+
+    }
+
+    app.add_topic(topicPath.toStdString());
 }
 
 void ConnectedWindow::subscribeFailed() {

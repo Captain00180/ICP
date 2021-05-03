@@ -7,7 +7,7 @@
 #ifndef ICP_APPLICATION_LOGIC_H
 #define ICP_APPLICATION_LOGIC_H
 
-#include <map>
+#include <ctime>
 
 #include "mqtt/async_client.h"
 #include "ActionCallback.h"
@@ -69,6 +69,10 @@ public:
      * @param name Name of the topic
      */
     void add_topic(const std::string& name);
+
+    void add_topic_message(const std::string& topic, const std::string& payload);
+
+    std::vector<std::pair<std::string, std::string>> get_topic_history(const std::string& topic);
 
     /**
      * Checks whether client is already subscribed to the given topic

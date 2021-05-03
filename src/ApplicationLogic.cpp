@@ -98,6 +98,38 @@ void ApplicationLogic::add_topic(const std::string& name)
      }
 }
 
+void ApplicationLogic::add_topic_message(const std::string& topic, const std::string &payload) {
+    if (topic_subscribed(topic))
+    {
+        for (auto i : subscribed_topics)
+        {
+            if (i->name == topic)
+            {
+                if (i->history.size() >= 5)
+                {
+                    i->history.erase(i->history.begin());
+                }
+                time_t timestamp = time(0);
+                std::string dt = ctime(&timestamp);
+                std::pair<std::string, std::string> data(dt, payload);
+                i->history.push_back(data);
+            }
+        }
+    }
+}
+
+std::vector<std::pair<std::string, std::string>> ApplicationLogic::get_topic_history(const std::string &topic) {
+    if (topic_subscribed(topic))
+    {
+        for (auto i : subscribed_topics)
+        {
+            if (i->name == topic)
+                return i->history;
+        }
+    }
+    return std::vector<std::pair<std::string, std::string>>();
+}
+
 int ApplicationLogic::publish(const std::string &topic, const std::string &payload) {
     auto message = mqtt::make_message(topic, payload);
     active_client_->publish(message, nullptr, *active_callback_);
