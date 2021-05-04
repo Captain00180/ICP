@@ -32,6 +32,10 @@ void PublishMessage::uploadFile()
                 this, "Upload File",
                 "");    // tr("Text files (*.txt)")
 
+    if (filePath.isEmpty())
+    {
+        return;
+    }
     QFileInfo* fileName = new QFileInfo(filePath);
     if (!app.open_file(filePath.toStdString()))
     {

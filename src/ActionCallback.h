@@ -7,8 +7,6 @@
 
 #include <iostream>
 #include <QObject>
-#include <fstream>
-
 #include "mqtt/async_client.h"
 
 /**
