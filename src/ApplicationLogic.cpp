@@ -71,12 +71,28 @@ int ApplicationLogic::disconnect() {
 }
 
 int ApplicationLogic::subscribe(const std::string &topic) {
-    active_client_->subscribe(topic, 1, nullptr, *active_callback_)->wait();
+    active_client_->subscribe(topic, 1, nullptr, *active_callback_);
     return 0;
 }
 
 int ApplicationLogic::unsubscribe(const std::string &topic) {
-    active_client_->unsubscribe(topic);
+    auto it = subscribed_topics.begin();
+    while(it != subscribed_topics.end())
+    {
+        const std::string found = (*it)->name;
+        std::cout << "Checking topic " << found << std::endl;
+        if(found.rfind(topic, 0) == 0)
+        {
+            std::cout << topic << " found in subtopic " << found << std::endl;
+            active_client_->unsubscribe(found);
+            it = subscribed_topics.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
     return 0;
 }
 
@@ -121,25 +137,65 @@ void ApplicationLogic::add_topic_message(const std::string& topic, const std::st
 std::vector<std::pair<std::string, std::string>> ApplicationLogic::get_topic_history(const std::string &topic) {
     if (topic_subscribed(topic))
     {
+        std::cout << topic << " topic is subscribed\n";
         for (auto i : subscribed_topics)
         {
             if (i->name == topic)
+            {
                 return i->history;
+            }
         }
     }
     return std::vector<std::pair<std::string, std::string>>();
 }
 
-int ApplicationLogic::publish(const std::string &topic, const std::string &payload) {
-    auto message = mqtt::make_message(topic, payload);
-    active_client_->publish(message, nullptr, *active_callback_);
+bool ApplicationLogic::is_file_selected() {
+    return file_selected;
+}
+
+int ApplicationLogic::publish(const std::string &topic, const std::string &payload, int qos, bool retain) {
+    if (file_selected)
+    {
+        auto message = mqtt::make_message(topic, file_content, qos, retain);
+        active_client_->publish(message, nullptr, *active_callback_);
+    }
+    else
+    {
+        auto message = mqtt::make_message(topic, payload, qos, retain);
+        active_client_->publish(message, nullptr, *active_callback_);
+    }
+
     return 0;
+}
+
+void ApplicationLogic::reset_file_status() {
+    file_selected = false;
+    file_content = "";
+}
+
+
+bool ApplicationLogic::open_file(const std::string &file_path) {
+    std::ifstream file_stream(file_path);
+    if (!file_stream.is_open())
+    {
+        return false;
+    }
+
+    std::string content((std::istreambuf_iterator<char>(file_stream)),
+                        (std::istreambuf_iterator<char>()));
+    std::cout << "File content: " << content << std::endl;
+    file_stream.close();
+    file_content = content;
+    file_selected = true;
+    return true;
+
 }
 
 ApplicationLogic::ApplicationLogic() {
     active_client_ = nullptr;
     active_callback_ = nullptr;
     active_con_opts = nullptr;
+    reset_file_status();
 }
 
 ApplicationLogic::~ApplicationLogic() {

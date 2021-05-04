@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     setFixedSize(900,410);
     QPushButton* butt_create = ui->SaveButton;
 
+    ui->input_ServerName->setText("localhost:1883");
+
     QObject::connect(
                 butt_create, &QPushButton::clicked,
                 this, &MainWindow::onAddConnection);

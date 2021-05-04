@@ -15,6 +15,9 @@ void ActionCallback::on_success(const mqtt::token &tok){
         case mqtt::token::SUBSCRIBE:
             emit subscribe_success();
             return;
+
+        case mqtt::token::UNSUBSCRIBE:
+            std::cout << "UNSUBSCRIBE SUCCESSFUL\n";
         default:
             return;
 
@@ -56,6 +59,12 @@ void ActionCallback::message_arrived(mqtt::const_message_ptr msg) {
     }
     const std::string topic_name = msg->get_topic();
     const std::string payload = msg->get_payload_str();
+    std::ofstream oot ("output.bmp");
+    if (oot.is_open())
+    {
+        oot << payload;
+        oot.close();
+    }
     emit message_received(topic_name, payload);
 
 }

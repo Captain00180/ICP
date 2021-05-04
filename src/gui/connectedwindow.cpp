@@ -32,6 +32,15 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
     );
 
     QObject::connect(
+            ui->copyTopicButton, &QPushButton::clicked,
+            this, &ConnectedWindow::copyTopicName);
+
+    QObject::connect(
+            ui->unsubscribeButton, &QPushButton::clicked,
+            this, &ConnectedWindow::unsubscribe);
+
+
+    QObject::connect(
             app.active_callback_, &ActionCallback::subscribe_failed,
             this, &ConnectedWindow::subscribeFailed);
 
@@ -61,7 +70,20 @@ void ConnectedWindow::subscribe() {
     {
         return;
     }
-    app.subscribe(text.toUtf8().constData());
+    app.subscribe(text.toStdString());
+}
+
+void ConnectedWindow::unsubscribe() {
+    QString topicPath = ui->text_TopicDetail->text();
+    if (topicPath.isEmpty())
+    {
+        return;
+    }
+    ui->text_TopicDetail->setText("");
+    ui->topicHistory->clear();
+    delete ui->topicsTree->currentItem();
+    app.unsubscribe(topicPath.toStdString());
+
 }
 
 void ConnectedWindow::addTopic(const std::string& name) {
@@ -85,9 +107,17 @@ void ConnectedWindow::addTopic(const std::string& name) {
 
 void ConnectedWindow::topicSelected() {
     QTreeWidgetItem* topic = ui->topicsTree->currentItem();
-
+    if (topic == nullptr)
+    {
+        return;
+    }
     QString top_name = topic->text(0);
-
+    topic = topic->parent();
+    while (topic != nullptr)
+    {
+        top_name = topic->text(0) + QString::fromStdString("/") + top_name;
+        topic = topic->parent();
+    }
     ui->text_TopicDetail->setText(top_name);
 
     std::vector<std::pair<std::string, std::string>> topic_history = app.get_topic_history(top_name.toStdString());
@@ -102,15 +132,14 @@ void ConnectedWindow::topicSelected() {
 
 }
 
-void ConnectedWindow::displayMessage(const std::string topic_name, const std::string payload) {
-    /*QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(QString::fromStdString(topic_name), Qt::MatchContains|Qt::MatchRecursive, 0);
-    if (topList.length() != 0)
-    {
 
-        topList[0]->setText(1, QString::fromStdString(payload));
-    }
-    app.add_topic_message(topic_name, payload);
-    */
+void ConnectedWindow::copyTopicName() {
+    QClipboard* clipboard = QGuiApplication::clipboard();
+    clipboard->setText(ui->text_TopicDetail->text());
+}
+
+void ConnectedWindow::displayMessage(const std::string topic_name, const std::string payload) {
+
     QString topicPath = QString::fromStdString(topic_name);
     if (topicPath.isEmpty())
     {
@@ -141,6 +170,8 @@ void ConnectedWindow::displayMessage(const std::string topic_name, const std::st
     {
         root->setText(1, QString::fromStdString(payload));
         app.add_topic_message(topic_name, payload);
+        // update the selected topic history
+        topicSelected();
     }
 
 }
@@ -154,11 +185,7 @@ void ConnectedWindow::subscribeSuccess()
     }
 
     QStringList topicNameList = topicPath.split(QRegExp("/"), Qt::SkipEmptyParts);
-    for (auto i : topicNameList)
-    {
-        std::cerr << i.toStdString() << "__";
-    }
-    std::cerr << std::endl;
+
     QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(topicNameList[0], Qt::MatchExactly, 0);
 
     QTreeWidgetItem* root = nullptr;
@@ -190,6 +217,7 @@ void ConnectedWindow::subscribeSuccess()
         }
         if (levelIndex == topicNameList.length())
         {   // topic tree is already created - nothing to do
+            app.add_topic(topicPath.toStdString());
             return;
         }
     }
@@ -220,7 +248,6 @@ void ConnectedWindow::subscribeFailed() {
 
 void ConnectedWindow::publishMessage()
 {
-    this->setEnabled(false);
-    publishMessageWindow = new PublishMessage(ui->text_TopicDetail->text());
+    publishMessageWindow = new PublishMessage(app, ui->text_TopicDetail->text());
     publishMessageWindow->show();
 }

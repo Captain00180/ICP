@@ -4,6 +4,7 @@
 #include <ctime>
 #include <QMainWindow>
 #include <QTreeWidget>
+#include <QClipboard>
 #include "publishmessage.h"
 #include "../ApplicationLogic.h"
 #include "../ActionCallback.h"
@@ -24,9 +25,13 @@ public:
 
     void subscribe();
 
+    void unsubscribe();
+
     void addTopic(const std::string& name);
 
     void topicSelected();
+
+    void copyTopicName();
 
 public slots:
     void subscribeSuccess();

@@ -8,7 +8,8 @@
 #define ICP_APPLICATION_LOGIC_H
 
 #include <ctime>
-
+#include <string>
+#include <fstream>
 #include "mqtt/async_client.h"
 #include "ActionCallback.h"
 #include "topic.h"
@@ -81,12 +82,21 @@ public:
      */
     bool topic_subscribed(const std::string& name);
 
-    int publish(const std::string& topic, const std::string& payload);
+    int publish(const std::string& topic, const std::string& payload, int qos=0, bool retain=false);
+
+    void reset_file_status();
+
+    bool is_file_selected();
+
+    bool open_file(const std::string& file_path);
 
     ApplicationLogic();
 
     ~ApplicationLogic();
 
+private:
+    std::string file_content;
+    bool file_selected;
 
 };
 
