@@ -1,6 +1,7 @@
 /**
  * @file connectedwindow.cpp
  * @author Filip Januška
+ * @author David Hurta
  * Implementation of the second window of the application
  */
 
