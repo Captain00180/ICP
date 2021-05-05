@@ -181,14 +181,18 @@ void ConnectedWindow::displayMessage(const std::string& topic_name, const std::s
         QByteArray buffer = QByteArray(payload.data(), payload.length()-1);
         QPixmap pix_map = QPixmap();
         pix_map.loadFromData(buffer);
-        if (!pix_map.toImage().isNull())
+        if (!pix_map.toImage().isNull())    // Check if payload was an image
         {
             root->setText(1, "<Data Contains an Image>");
+            // The image is saved into the second column of the item
+            // Encoding the buffer content as to not lose any information when saving the image into a QString
             root->setText(2, QString(buffer.toBase64()));
         }
         else if (payload.length() > 20)
         {
+            // Show only first 20 characters
             root->setText(1, QString::fromStdString(payload.substr(0, 20) + "..."));
+            // The remaining data is saved into the second column
             root->setText(2, QString::fromStdString(payload));
         }
         else
