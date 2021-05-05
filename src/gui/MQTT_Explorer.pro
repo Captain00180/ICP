@@ -1,3 +1,7 @@
+# Author - Filip Januška
+# The project file defines the project and guides the Makefile generation from a qmake command
+# The file was generated automatically by Qt Creator and then modified to match the project requirements
+
 QT += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -17,7 +21,7 @@ SOURCES += \
     publishmessage.cpp \
     ../ActionCallback.cpp \
     ../ApplicationLogic.cpp \
-    ../topic.cpp
+    ../Topic.cpp
 
 
 HEADERS += \
@@ -26,7 +30,7 @@ HEADERS += \
     publishmessage.h \
     ../ActionCallback.h \
     ../ApplicationLogic.h \
-    ../topic.h
+    ../Topic.h
 
 
 FORMS += \

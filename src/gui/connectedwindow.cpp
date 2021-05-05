@@ -1,3 +1,10 @@
+/**
+ * @file connectedwindow.cpp
+ * @author Filip Januška
+ * Implementation of the second window of the application
+ */
+
+
 #include "connectedwindow.h"
 #include "ui_connectedwindow.h"
 
@@ -19,7 +26,7 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
 
     QObject::connect(
                 ui->publishButton, &QPushButton::clicked,
-                this, &ConnectedWindow::publishMessage);
+                this, &ConnectedWindow::createMessage);
 
 
     QObject::connect(
@@ -122,7 +129,7 @@ void ConnectedWindow::topicSelected() {
 
     std::vector<std::pair<std::string, std::string>> topic_history = app.get_topic_history(top_name.toStdString());
     ui->topicHistory->clear();
-    for (auto i : topic_history)
+    for (const auto& i : topic_history)
     {
         auto timestamp = QString::fromStdString(i.first).simplified();
         QStringList timestampSplit = timestamp.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
@@ -138,7 +145,7 @@ void ConnectedWindow::copyTopicName() {
     clipboard->setText(ui->text_TopicDetail->text());
 }
 
-void ConnectedWindow::displayMessage(const std::string topic_name, const std::string payload) {
+void ConnectedWindow::displayMessage(const std::string& topic_name, const std::string& payload) {
 
     QString topicPath = QString::fromStdString(topic_name);
     if (topicPath.isEmpty())
@@ -242,11 +249,13 @@ void ConnectedWindow::subscribeSuccess()
     app.add_topic(topicPath.toStdString());
 }
 
+
+// TODO Display it properly somewhere
 void ConnectedWindow::subscribeFailed() {
     ui->disconnectButton->setText("Sub Failed");
 }
 
-void ConnectedWindow::publishMessage()
+void ConnectedWindow::createMessage()
 {
     publishMessageWindow = new PublishMessage(app, ui->text_TopicDetail->text());
     publishMessageWindow->show();

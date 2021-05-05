@@ -1,3 +1,9 @@
+/**
+ * @file publishmessage.cpp
+ * @author Filip Januška
+ * Implementation of the publish message window of the application
+ */
+
 #include "publishmessage.h"
 #include "ui_publishmessage.h"
 
@@ -28,7 +34,7 @@ PublishMessage::~PublishMessage()
 
 void PublishMessage::uploadFile()
 {
-    filePath = QFileDialog::getOpenFileName(
+    QString filePath = QFileDialog::getOpenFileName(
                 this, "Upload File",
                 "");    // tr("Text files (*.txt)")
 

@@ -1,3 +1,10 @@
+/**
+ * @file mainwindow.cpp
+ * @author Filip Januška
+ * Implementation of the initial main window of the application
+ */
+
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -86,12 +93,7 @@ void MainWindow::connectWindow()
     app.create_client(serverName.toUtf8().constData(), "RandomICPId");
     app.create_con_opts();
     app.create_callback();
-/*
-    QObject::connect(
-            app.active_callback_, &ActionCallback::connection_failed,
-            this, &MainWindow::failedToConnect
-    );
-*/
+
     if (app.connect() != 0){
         ui->text_error->setText("Couldn't establish connection");
         ui->text_error->show();
