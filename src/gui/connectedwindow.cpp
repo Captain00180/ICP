@@ -216,7 +216,7 @@ void ConnectedWindow::subscribeSuccess()
         return;
     }
 
-    QStringList topicNameList = topicPath.split(QRegExp("/"), Qt::SkipEmptyParts);
+    QStringList topicNameList = topicPath.split(QRegExp("/"), QString::SkipEmptyParts);
 
     QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(topicNameList[0], Qt::MatchExactly, 0);
 
