@@ -1,6 +1,9 @@
 #ifndef CONNECTEDWINDOW_H
 #define CONNECTEDWINDOW_H
 
+#include <iostream>
+#include <fstream>
+#include <experimental/filesystem>
 #include <ctime>
 #include <QMainWindow>
 #include <QTreeWidget>
@@ -27,6 +30,8 @@ public:
     void addTopic(const std::string& name);
 
     void topicSelected();
+
+    void saveSnapshot();
 
 public slots:
     void subscribeSuccess();
