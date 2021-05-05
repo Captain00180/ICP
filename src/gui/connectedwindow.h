@@ -67,8 +67,6 @@ public:
      */
     void unsubscribe();
 
-    void addTopic(const std::string& name);
-
     /**
      * Triggers when user selects a topic in the tree structure. The topic's history and detail is displayed on the right
      * side of the app.

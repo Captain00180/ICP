@@ -12,30 +12,20 @@ ActionCallback::ActionCallback(mqtt::async_client &client)
 
 void ActionCallback::on_success(const mqtt::token &tok){
     std::cout << "Action '" << tok.get_type() << "' Successful!" << std::endl;
-    switch (tok.get_type()) {
-        case mqtt::token::SUBSCRIBE:
-            emit subscribe_success();
-            return;
-
-        case mqtt::token::UNSUBSCRIBE:
-            std::cout << "UNSUBSCRIBE SUCCESSFUL\n";
-        default:
-            return;
-
+    if (tok.get_type() == mqtt::token::SUBSCRIBE)
+    {
+        // Notify the frontend that subscribe action has been successful
+        emit subscribe_success();
     }
 }
 
 void ActionCallback::on_failure(const mqtt::token &tok){
     std::cout << "ERROR: Action '" << tok.get_type() << "' Failed!" << std::endl;
-    switch (tok.get_type()) {
-        case mqtt::token::SUBSCRIBE:
-            emit subscribe_failed();
-            return;
-        default:
-            return;
-
+    if (tok.get_type() == mqtt::token::SUBSCRIBE)
+    {
+        // Notify the frontend that subscribe action has failed
+        emit subscribe_failed();
     }
-    //emit connection_failed();
 }
 
 void ActionCallback::connected(const std::string& /*cause*/) {
@@ -48,6 +38,7 @@ void ActionCallback::connection_lost(const std::string& /*cause*/) {
 
     while(!client_.is_connected() && reconnect_attempts-- > 0)
     {
+        // Attempt to reconnect for "reconnect_attempts" times
         std::cout << "Retrying connection..." << std::endl;
         client_.reconnect()->wait();
     }
@@ -59,10 +50,10 @@ void ActionCallback::message_arrived(mqtt::const_message_ptr msg) {
     std::cout << "\tPayload: " << msg->get_payload() << std::endl;
     const std::string topic_name = msg->get_topic();
     const std::string payload = msg->get_payload_str();
+    // Forward the message to the frontend
     emit message_received(topic_name, payload);
 
 }
-
 
 void ActionCallback::delivery_complete(mqtt::delivery_token_ptr tok) {
     std::cout << "Message '" << tok->get_message() << "' delivered!" << std::endl;

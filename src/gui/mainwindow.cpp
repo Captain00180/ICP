@@ -15,12 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setFixedSize(900,410);
-    QPushButton* butt_create = ui->SaveButton;
 
+    // TODO remove
     ui->input_ServerName->setText("localhost:1883");
 
     QObject::connect(
-                butt_create, &QPushButton::clicked,
+                ui->SaveButton, &QPushButton::clicked,
                 this, &MainWindow::onAddConnection);
 
     QObject::connect(
@@ -31,7 +31,9 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->ConnectButton, &QPushButton::clicked,
                 this, &MainWindow::connectWindow);
 
+    // Button group with all saved connections
     savedConnections = new QButtonGroup(ui->scrollConnections);
+    // Only one may be selected at a time
     savedConnections->setExclusive(true);
 
     ui->text_error->hide();
@@ -48,6 +50,7 @@ void MainWindow::onAddConnection()
 
     QString text = ui->input_ServerName->text();
 
+    // New saved connection
     QPushButton* new_button = new QPushButton(text, ui->scrollConnections);
     new_button->setMinimumSize(QSize(250, 50));
     new_button->setCheckable(true);
@@ -59,8 +62,6 @@ void MainWindow::onAddConnection()
     layout->insertWidget(0, new_button);
     savedConnections->addButton(new_button);
     new_button->setChecked(true);
-
-
 }
 
 void MainWindow::onRemoveConnection()
@@ -90,7 +91,8 @@ void MainWindow::connectWindow()
     else
         ui->text_error->hide();
 
-    app.create_client(serverName.toUtf8().constData(), "RandomICPId");
+    // Initialize the backend app logic
+    app.create_client(serverName.toStdString());
     app.create_con_opts();
     app.create_callback();
 
@@ -99,7 +101,8 @@ void MainWindow::connectWindow()
         ui->text_error->show();
         return;
     }
-    connectedWindow = new ConnectedWindow(ui->input_ServerName->text(), app, nullptr    );
+    // Switch control to the second window
+    connectedWindow = new ConnectedWindow(ui->input_ServerName->text(), app, nullptr);
     this->hide();
     connectedWindow->show();
 

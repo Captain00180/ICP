@@ -37,7 +37,7 @@ public:
      * @param topicName Name of the selected topic in the second app window
      * @param parent Parent widget
      */
-    explicit PublishMessage(ApplicationLogic& _app, QString topicName, QWidget *parent = nullptr);
+    explicit PublishMessage(ApplicationLogic& _app, const QString& topicName, QWidget *parent = nullptr);
     /**
      * PublishMessage destructor
      */

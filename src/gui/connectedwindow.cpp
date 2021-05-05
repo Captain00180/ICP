@@ -15,10 +15,8 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
 {
     app = appLogic;
     ui->setupUi(this);
-    if (serverName.length() == 0)
-        serverName = "Server Name";
-    ui->text_ServerName->setText(serverName);
 
+    ui->text_ServerName->setText(serverName);
     ui->topicsTree->setHeaderHidden(true);
     ui->topicsTree->setColumnCount(2);
     ui->topicsTree->header()->setStretchLastSection(false);
@@ -36,8 +34,7 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
 
     QObject::connect(
             ui->topicsTree, &QTreeWidget::itemClicked,
-            this, &ConnectedWindow::topicSelected
-    );
+            this, &ConnectedWindow::topicSelected);
 
     QObject::connect(
             ui->copyTopicButton, &QPushButton::clicked,
@@ -64,6 +61,7 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
                 ui->snapshotButton, &QPushButton::clicked,
                 this, &ConnectedWindow::saveSnapshot);
 
+    // Register std::string type, so that it can be used in the displayMessage signal-slot connection
     qRegisterMetaType<std::string>("std::string");
 
 
@@ -78,6 +76,7 @@ void ConnectedWindow::subscribe() {
     QString text = ui->input_topic->text();
     if (text.length() == 0)
     {
+        // Only subscribe to a topic, if the name is valid
         return;
     }
     app.subscribe(text.toStdString());
@@ -96,25 +95,6 @@ void ConnectedWindow::unsubscribe() {
 
 }
 
-void ConnectedWindow::addTopic(const std::string& name) {
-    QTreeWidgetItem* topic = new QTreeWidgetItem(ui->topicsTree);
-    topic->setText(0, QString::fromStdString(name));
-
-    topic->setText(1, "Hello");
-    ui->topicsTree->addTopLevelItem(topic);
-    QTreeWidgetItem* child = new QTreeWidgetItem(topic);
-    child->setText(0, "I'm a child");
-    topic->addChild(child);
-    ui->topicsTree->resizeColumnToContents(0);
-
-    QObject::connect(
-            ui->topicsTree, &QTreeWidget::itemClicked,
-            this, &ConnectedWindow::topicSelected
-            );
-
-
-}
-
 void ConnectedWindow::topicSelected() {
     QTreeWidgetItem* topic = ui->topicsTree->currentItem();
     if (topic == nullptr)
@@ -125,17 +105,20 @@ void ConnectedWindow::topicSelected() {
     topic = topic->parent();
     while (topic != nullptr)
     {
+        // Iterate upwards through the topic tree to get the full path to the selected topic
         top_name = topic->text(0) + QString::fromStdString("/") + top_name;
         topic = topic->parent();
     }
     ui->text_TopicDetail->setText(top_name);
 
+    // Fetch the topic history from the backend
     std::vector<std::pair<std::string, std::string>> topic_history = app.get_topic_history(top_name.toStdString());
     ui->topicHistory->clear();
     for (const auto& i : topic_history)
     {
         auto timestamp = QString::fromStdString(i.first).simplified();
-        QStringList timestampSplit = timestamp.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+        // Keep just the timestamp without date (HH:MM:SS)
+        QStringList timestampSplit = timestamp.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
         auto payload = QString::fromStdString(i.second);
         ui->topicHistory->addItem(timestampSplit[3] + ": " + payload);
     }
@@ -155,18 +138,25 @@ void ConnectedWindow::displayMessage(const std::string& topic_name, const std::s
     {
         return;
     }
-    QStringList topicNameList = topicPath.split(QRegExp("/"), QString::SkipEmptyParts);
+    // Split the topic path to separate topic levels
+    QStringList topicNameList = topicPath.split(QRegExp("/"), Qt::SkipEmptyParts);
+    // Search the top items in the topic tree for the required top level topic
     QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(topicNameList[0], Qt::MatchExactly, 0);
 
     QTreeWidgetItem* root = topList[0];
+    // Current level in the topic path
     int levelIndex = 1;
+    // Index of the currently checked out child topic
     int childIndex = 0;
 
+    // Iterates through all children of a given topic, searching for the correct topic, according to the specified topic path
     while (levelIndex < topicNameList.length() &&  childIndex < root->childCount())
     {
+        // Checks all children of the current topic
         auto kid = root->child(childIndex);
         if (kid->text(0) == topicNameList[levelIndex])
         {
+            // The child topic is the next topic to follow, according to the path
             root = kid;
             childIndex = 0;
             levelIndex++;
@@ -178,6 +168,8 @@ void ConnectedWindow::displayMessage(const std::string& topic_name, const std::s
     }
     if (levelIndex == topicNameList.length())
     {
+        // The final topic fully matches the required topic path
+        // This condition should be always true, it's here as a fail-safe
         QByteArray buffer = QByteArray(payload.data(), payload.length()-1);
         QPixmap pix_map = QPixmap();
         pix_map.loadFromData(buffer);
@@ -216,28 +208,30 @@ void ConnectedWindow::subscribeSuccess()
         return;
     }
 
-    QStringList topicNameList = topicPath.split(QRegExp("/"), QString::SkipEmptyParts);
-
+    // Split the topic path to separate topic levels
+    QStringList topicNameList = topicPath.split(QRegExp("/"), Qt::SkipEmptyParts);
+    // Search the top items in the topic tree for the required top level topic
     QList<QTreeWidgetItem*> topList = ui->topicsTree->findItems(topicNameList[0], Qt::MatchExactly, 0);
 
+    // Currently checked out topic
     QTreeWidgetItem* root = nullptr;
+    // Current level in the topic path
     int levelIndex = 1;
 
     if (!topList.isEmpty())
     {
-
+        // Top level topic is already present
         root = topList[0];
-        std::cerr << "Top level root already present - " << root->text(0).toStdString() << std::endl;
         int childIndex = 0;
 
+        // Iterates through all children of a given topic, searching for the correct topic, according to the specified topic path
         while (levelIndex < topicNameList.length() &&  childIndex < root->childCount())
         {
-
+            // Checks all children of the current topic
             auto kid = root->child(childIndex);
-            std::cerr << "Checking child " << kid->text(0).toStdString() << std::endl;
             if (kid->text(0) == topicNameList[levelIndex])
             {
-                std::cerr << "Match found: " << kid->text(0).toStdString() << std::endl;
+                // The child topic is the next topic to follow, according to the path
                 root = kid;
                 childIndex = 0;
                 levelIndex++;
@@ -260,15 +254,18 @@ void ConnectedWindow::subscribeSuccess()
         root->setText(0, topicNameList[0]);
         ui->topicsTree->addTopLevelItem(root);
     }
+    // "root" is now set to the last created topic in the topic path
+    // e.g. if topic path is "home/test/thermometer/front" and the hierarchy "home/test" is already created,
+    // "root" will point to the "home/test" topic and create all subtopics left in the path
 
     QTreeWidgetItem* new_child = nullptr;
     for (; levelIndex < topicNameList.length(); levelIndex++)
     {
+        // for all topics in the path which are not yet created, create them
         new_child = new QTreeWidgetItem(root);
         new_child->setText(0, topicNameList[levelIndex]);
         root->addChild(new_child);
         root = new_child;
-
     }
 
     app.add_topic(topicPath.toStdString());
@@ -282,6 +279,7 @@ void ConnectedWindow::subscribeFailed() {
 
 void ConnectedWindow::createMessage()
 {
+    // Launches a Publish Message window, which blocks the rest of the app until it's closed
     publishMessageWindow = new PublishMessage(app, ui->text_TopicDetail->text());
     publishMessageWindow->show();
 }
@@ -292,7 +290,7 @@ void ConnectedWindow::saveSnapshot()
     dialog.setFileMode(QFileDialog::Directory); 
     std::string selected_dir = QFileDialog::getExistingDirectory(this, tr("Select the directory to save the snapshot")).toStdString();
 
-    if (selected_dir == "")
+    if (selected_dir.empty())
     {
         // user clicked cancel
         return;

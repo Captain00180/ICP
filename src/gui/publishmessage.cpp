@@ -7,7 +7,7 @@
 #include "publishmessage.h"
 #include "ui_publishmessage.h"
 
-PublishMessage::PublishMessage(ApplicationLogic& _app, QString topicName, QWidget *parent) :
+PublishMessage::PublishMessage(ApplicationLogic& _app, const QString& topicName, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::PublishMessage)
 {
@@ -34,17 +34,20 @@ PublishMessage::~PublishMessage()
 
 void PublishMessage::uploadFile()
 {
+    // Launches a File Dialog, where user can select any file to upload
     QString filePath = QFileDialog::getOpenFileName(
                 this, "Upload File",
-                "");    // tr("Text files (*.txt)")
+                "");
 
     if (filePath.isEmpty())
     {
         return;
     }
+
     QFileInfo* fileName = new QFileInfo(filePath);
     if (!app.open_file(filePath.toStdString()))
     {
+        // Attempts to open and read the file in backend logic
         ui->text_fileName->setText("Failed to open file");
     }
     else
@@ -60,9 +63,11 @@ void PublishMessage::publish() {
     QString topic = ui->input_topicName->text();
     if ((!app.is_file_selected() && payload.isEmpty()) || topic.isEmpty())
     {
+        // Doesn't do anything if the user input field is empty or the topic name is not provided
         return;
     }
 
+    // Default QoS
     int qos = 0;
 
     if (ui->qos_1->isChecked())

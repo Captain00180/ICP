@@ -5,9 +5,13 @@
  */
 #include "ApplicationLogic.h"
 
-void ApplicationLogic::create_client(const std::string &server, const std::string &clientID) {
+#define TOPIC_HISTORY_RANGE 5
+
+void ApplicationLogic::create_client(const std::string &server) {
     delete_client();
-    active_client_ = new mqtt::async_client(server, clientID);
+    // Generate a pseudo-random client ID
+    std::string num = std::to_string(rand() % 1000);
+    active_client_ = new mqtt::async_client(server, "ICP_client_" + num);
 }
 
 void ApplicationLogic::create_callback() {
@@ -42,14 +46,17 @@ int ApplicationLogic::connect() {
         active_client_->connect(*active_con_opts, nullptr, *active_callback_)->wait();
     }
     catch (const mqtt::exception& exc) {
+        // Connection attempt was unsuccessful
         std::cerr << "\nError: Unable to connect to MQTT server: \t" << exc << std::endl;
         return 1;
     }
     if (!active_client_->is_connected())
     {
+        // Connection attempt was unsuccessful
         std::cerr << "\nError: Unable to connect to MQTT server" << std::endl;
         return 1;
     }
+    // Client is connected to a server
     return 0;
 }
 
@@ -61,7 +68,7 @@ int ApplicationLogic::disconnect() {
         std::cerr << "Error: Couldn't disconnect\n";
         return 1;
     }
-    std::cout << "Disconnect succesful" << std::endl;
+    std::cout << "Disconnect successful" << std::endl;
     return 0;
 }
 
@@ -71,13 +78,14 @@ void ApplicationLogic::subscribe(const std::string &topic_name) {
 
 void ApplicationLogic::unsubscribe(const std::string &topic_name) {
     auto it = subscribed_topics.begin();
+    // Iterate through the subscribed topics to find all subtopics of the topic, which is to be unsubscribed from
     while(it != subscribed_topics.end())
     {
         const std::string found = (*it)->name;
-        std::cout << "Checking topic " << found << std::endl;
         if(found.rfind(topic_name, 0) == 0)
         {
-            std::cout << topic_name << " found in subtopic " << found << std::endl;
+            // Current topic's name begins with the path of the requested topic.
+            // That means, that the found topic is a subtopic and needs to be unsubscribed as well
             active_client_->unsubscribe(found);
             it = subscribed_topics.erase(it);
         }
@@ -90,6 +98,7 @@ void ApplicationLogic::unsubscribe(const std::string &topic_name) {
 }
 
 bool ApplicationLogic::topic_subscribed(const std::string &topic_name) {
+    // iterate through all subscribed topics, look for the given topic name
     for (auto i : subscribed_topics)
     {
         if (i->name == topic_name)
@@ -114,12 +123,15 @@ void ApplicationLogic::add_topic_message(const std::string& topic_name, const st
         {
             if (i->name == topic_name)
             {
-                if (i->history.size() >= 5)
+                if (i->history.size() >= TOPIC_HISTORY_RANGE)
                 {
+                    // Simulates a queue of a fixed size - oldest messages get deleted when the vector fills up
                     i->history.erase(i->history.begin());
                 }
+                // Generate a current timestamp
                 time_t timestamp = time(nullptr);
                 std::string dt = ctime(&timestamp);
+                // Saves the mssage with a timestamp
                 std::pair<std::string, std::string> data(dt, payload);
                 i->history.push_back(data);
             }
@@ -130,7 +142,6 @@ void ApplicationLogic::add_topic_message(const std::string& topic_name, const st
 std::vector<std::pair<std::string, std::string>> ApplicationLogic::get_topic_history(const std::string &topic_name) {
     if (topic_subscribed(topic_name))
     {
-        std::cout << topic_name << " topic is subscribed\n";
         for (auto i : subscribed_topics)
         {
             if (i->name == topic_name)
@@ -149,11 +160,14 @@ bool ApplicationLogic::is_file_selected() const {
 void ApplicationLogic::publish(const std::string &topic_name, const std::string &payload, int qos, bool retain) {
     if (file_selected)
     {
+        // Creates and publishes a message with data previously read from a file
         auto message = mqtt::make_message(topic_name, file_content, qos, retain);
         active_client_->publish(message, nullptr, *active_callback_);
+        reset_file_status();
     }
     else
     {
+        // Creates and publishes a message with data from the user
         auto message = mqtt::make_message(topic_name, payload, qos, retain);
         active_client_->publish(message, nullptr, *active_callback_);
     }
@@ -172,10 +186,11 @@ bool ApplicationLogic::open_file(const std::string &file_path) {
         return false;
     }
 
+    // Read the file content
     std::string content((std::istreambuf_iterator<char>(file_stream)),
                         (std::istreambuf_iterator<char>()));
-    std::cout << "File content: " << content << std::endl;
     file_stream.close();
+
     file_content = content;
     file_selected = true;
     return true;
@@ -187,6 +202,9 @@ ApplicationLogic::ApplicationLogic() {
     active_callback_ = nullptr;
     active_con_opts = nullptr;
     reset_file_status();
+
+    // Generate a random seed, for user ID generation
+    srand(time(nullptr));
 }
 
 ApplicationLogic::~ApplicationLogic() {
@@ -194,3 +212,22 @@ ApplicationLogic::~ApplicationLogic() {
     delete_con_opts();
     delete_client();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

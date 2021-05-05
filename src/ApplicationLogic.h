@@ -37,10 +37,9 @@ public:
     /**
      * Creates a new async client
      * @param server Name of the mqtt broker server
-     * @param clientID Client ID TODO Generate randomly
      * @return 0 if action was successful, else 1
      */
-    void create_client(const std::string& server, const std::string& clientID);
+    void create_client(const std::string &server);
 
     /**
      * Creates a new ActionCallback object and binds it to the client
