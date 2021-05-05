@@ -1,6 +1,8 @@
 /**
  * @file connectedwindow.h
  * @author Filip Januška
+ * @author David Hurta
+ * 
  * Header for the second window of the application
  * Partly generated with Qt Creator
  */
@@ -8,6 +10,9 @@
 #ifndef CONNECTEDWINDOW_H
 #define CONNECTEDWINDOW_H
 
+#include <iostream>
+#include <fstream>
+#include <experimental/filesystem>
 #include <ctime>
 #include <QMainWindow>
 #include <QTreeWidget>
@@ -69,6 +74,14 @@ public:
      * side of the app.
      */
     void topicSelected();
+
+    /**
+     * Saves the snapshot of the MQTT tree topics.
+     * Users is asked to provide a directory, where the snapshot will be saved to.
+     * Snapshot contains folders representing topics. If a topic contained any data, the data is saved to a payload.txt file
+     * in the corresponding directory for the topic. If an image is recognized, the image is saved to a payload.jpg file.
+     */
+    void saveSnapshot();
 
     /**
      * Copies the selected topic's name to system clipboard.
