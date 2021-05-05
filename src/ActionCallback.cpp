@@ -1,6 +1,7 @@
 /**
  * @file ActionCallback.cpp
  * @brief Implementation of the ActionCallback class
+ * @author Filip Januška
  */
 
 #include "ActionCallback.h"
@@ -15,6 +16,9 @@ void ActionCallback::on_success(const mqtt::token &tok){
         case mqtt::token::SUBSCRIBE:
             emit subscribe_success();
             return;
+
+        case mqtt::token::UNSUBSCRIBE:
+            std::cout << "UNSUBSCRIBE SUCCESSFUL\n";
         default:
             return;
 
@@ -34,26 +38,25 @@ void ActionCallback::on_failure(const mqtt::token &tok){
     //emit connection_failed();
 }
 
-void ActionCallback::connected(const std::string &cause) {
-    std::cout << "Client connected! - " << cause << std::endl;
+void ActionCallback::connected(const std::string& /*cause*/) {
+    std::cout << "Client connected! - " << std::endl;
 }
 
-void ActionCallback::connection_lost(const std::string &cause) {
-    std::cout << "Client lost connection! - " << cause << std::endl;
+void ActionCallback::connection_lost(const std::string& /*cause*/) {
+    std::cout << "Client lost connection! - " << std::endl;
+    int reconnect_attempts = 5;
 
-    while(!client_.is_connected())
+    while(!client_.is_connected() && reconnect_attempts-- > 0)
     {
         std::cout << "Retrying connection..." << std::endl;
-        client_.reconnect();
+        client_.reconnect()->wait();
     }
 }
 
 void ActionCallback::message_arrived(mqtt::const_message_ptr msg) {
-    if(print_messages) {
-        std::cout << "Message arrived!" << std::endl;
-        std::cout << "\tTopic: " << msg->get_topic() << std::endl;
-        std::cout << "\tPayload: " << msg->get_payload() << std::endl;
-    }
+    std::cout << "Message arrived!" << std::endl;
+    std::cout << "\tTopic: " << msg->get_topic() << std::endl;
+    std::cout << "\tPayload: " << msg->get_payload() << std::endl;
     const std::string topic_name = msg->get_topic();
     const std::string payload = msg->get_payload_str();
     emit message_received(topic_name, payload);

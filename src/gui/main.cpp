@@ -1,3 +1,9 @@
+/**
+ * @file main.cpp
+ * @author Filip Januška
+ * Entry point of the program. Creates the application and Main Window of the application.
+ */
+
 #include "mainwindow.h"
 
 #include <QApplication>
