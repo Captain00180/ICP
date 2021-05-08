@@ -29,14 +29,14 @@ class Device
         const std::string CLIENT_ID_PREFIX = "ICP_testing_client_";
 
     protected:
-        std::string topic;
-        std::string status;
-        int interval;
-        time_t last_publish;
+        std::string topic;                          /**< Name of the topic the device corresponds to. */
+        std::string status;                         /**< Status containing the device's data. */
+        int interval;                               /**< Interval in which the device publishes the data. */
+        time_t last_publish;                        /**< Time of the last published message. */
 
-        mqtt::async_client client;
-        DeviceCallback* callback = nullptr;
-        mqtt::connect_options connect_options;
+        mqtt::async_client client;                  /**< Asynchronous MQTT client. */
+        DeviceCallback* callback = nullptr;         /**< Device's MQTT callback. */
+        mqtt::connect_options connect_options;      /**< Connection Options for the MQTT client.*/
 
     public:
 
