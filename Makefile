@@ -22,6 +22,7 @@ doxygen: Doxyfile
 	doxygen Doxyfile
 
 clean:
+	rm -f 1-xhurta04-xjanus11.zip
 	rm -rf ./doc/*	
-	cd src/gui; make -f Makefile-main clean; rm Makefile-main; rm .qmake.stash; rm MQTT_Explorer 
-	cd src/traffic_simulator; make -f Makefile-sim clean; rm Makefile-sim; rm .qmake.stash; rm traffic_simulator 
+	cd src/gui; make -f Makefile-main clean; rm -f Makefile-main; rm -f .qmake.stash; rm -f MQTT_Explorer 
+	cd src/traffic_simulator; make -f Makefile-sim clean; rm -f Makefile-sim; rm -f .qmake.stash; rm -f traffic_simulator 
