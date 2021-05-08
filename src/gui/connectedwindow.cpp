@@ -124,7 +124,18 @@ void ConnectedWindow::topicSelected() {
         // Keep just the timestamp without date (HH:MM:SS)
         QStringList timestampSplit = timestamp.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
         auto payload = QString::fromStdString(i.second);
-        ui->topicHistory->addItem(timestampSplit[3] + ": " + payload);
+
+        QByteArray buffer = QByteArray::fromRawData(i.second.data(), i.second.length());
+        QPixmap pix_map = QPixmap();
+        pix_map.loadFromData(buffer);
+        if (!pix_map.toImage().isNull())
+        {
+            ui->topicHistory->addItem(timestampSplit[3] + ": <Data Contains an Image>");
+        }
+        else
+        {
+            ui->topicHistory->addItem(timestampSplit[3] + ": " + payload);
+        }        
     }
 
 }
@@ -180,21 +191,15 @@ void ConnectedWindow::displayMessage(const std::string& topic_name, const std::s
         if (!pix_map.toImage().isNull())    // Check if payload was an image
         {
             root->setText(1, "<Data Contains an Image>");
-            // The image is saved into the second column of the item
-            // Encoding the buffer content as to not lose any information when saving the image into a QString
-            root->setText(2, QString(buffer.toBase64()));
         }
         else if (payload.length() > 20)
         {
             // Show only first 20 characters
             root->setText(1, QString::fromStdString(payload.substr(0, 20) + "..."));
-            // The remaining data is saved into the second column
-            root->setText(2, QString::fromStdString(payload));
         }
         else
         {
             root->setText(1, QString::fromStdString(payload));
-            root->setText(2, QString::fromStdString(payload));
         }
 
         app.add_topic_message(topic_name, payload);
@@ -319,13 +324,25 @@ void ConnectedWindow::saveSnapshot()
             parent = parent->parent();
         }
 
+        std::string topic_name = path;
         path = selected_dir + "/" + path;
         std::experimental::filesystem::create_directories(path);
 
 
+        // Fetch the topic history from the backend
+        std::vector<std::pair<std::string, std::string>> topic_history = app.get_topic_history(topic_name);
+        if (topic_history.size() == 0)
+        {
+            it++;
+            continue;
+        }
+
+        // Check if the data is image
+        const char * data = topic_history.back().second.data();
+
         // Create a jpg file if an image is detected
         // Create .txt file otherwise
-        QByteArray buffer = QByteArray::fromBase64((*it)->text(2).toStdString().data(), QByteArray::Base64Encoding);
+        QByteArray buffer = QByteArray::fromRawData(data, topic_history.back().second.length());        
         QPixmap pix_map = QPixmap();
         pix_map.loadFromData(buffer);
         if (!pix_map.toImage().isNull())
@@ -339,7 +356,7 @@ void ConnectedWindow::saveSnapshot()
         else if (buffer.length() > 0)
         {
             std::ofstream file(path + "/payload.txt");
-            file << (*it)->text(2).toStdString() << std::endl;
+            file << topic_history.back().second << std::endl;
             file.close();
         }
 
@@ -369,6 +386,10 @@ void ConnectedWindow::showFullMessage()
 
     // Fetch the topic history from the backend
     std::vector<std::pair<std::string, std::string>> topic_history = app.get_topic_history(top_name.toStdString());
+    if (topic_history.size() == 0)
+    {
+        return;
+    }
 
     // Check if the data is image
     const char * data = topic_history.back().second.data();
