@@ -26,7 +26,7 @@ class DeviceCallback; //  Declaring the class DeviceCallback to avoid problems a
 class Device
 {
     private:
-        const std::string CLIENT_ID_PREFIX = "ICP_testing_client_";
+        const std::string CLIENT_ID_PREFIX = "ICP_testing_client_"; /**< Prefix for the name of the device's client */
 
     protected:
         std::string topic;                          /**< Name of the topic the device corresponds to. */
