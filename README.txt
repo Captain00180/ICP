@@ -40,6 +40,7 @@ Unimplemented functionality
 
 -The first window allows the user to save and load server connection presets. While this works
 	in the UI, the app doesn't actually save or load these presets between app launches. 
+-The topics of sent messages should be visually (e.g. in color) different from received messages.
 -Due to inaccurate time and difficulty assessment, we weren't able to implement the Dashboard.
 	Only the UI elements are present, with no real functionality. 
 ----------------------------------------------
