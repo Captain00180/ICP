@@ -1,15 +1,22 @@
 # Top level Makefile
 # Author - Filip Januška
+# Author - David Hurta
 # Generates Makefiles for the main application and the traffic simulator, using qmake utility.
 
 build: src/gui/MQTT_Explorer.pro
-	cd src/gui; qmake-qt5 -o Makefile-main; make -f Makefile-main
-	cd src/traffic_simulator; qmake-qt5 -o Makefile-sim; make -f Makefile-sim
+	cd src/gui; qmake -o Makefile-main; make -f Makefile-main
+	cd src/traffic_simulator; qmake -o Makefile-sim; make -f Makefile-sim
 
 # WARNING - "qmake-qt5" command must be changed to the system's version of qmake
 
 run: build 
 	src/gui/MQTT_Explorer
+
+run-simulator: build
+	cd src/traffic_simulator; ./traffic_simulator traffic_simulator.config
+
+pack:
+	zip -r 1-xjanus11-xhurta04.zip Makefile Doxyfile README.txt examples/* src/*.h src/*.cpp src/gui/*.h src/gui/*.cpp src/gui/*.ui src/gui/*.pro src/traffic_simulator/*.h src/traffic_simulator/*.cpp src/traffic_simulator/*.pro src/traffic_simulator/*.config
 
 doxygen: Doxyfile
 	doxygen Doxyfile
