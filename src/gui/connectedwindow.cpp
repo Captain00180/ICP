@@ -349,12 +349,30 @@ void ConnectedWindow::saveSnapshot()
 
 void ConnectedWindow::showFullMessage()
 {
+
     // Get selected item
-    QList<QTreeWidgetItem *> list_of_items = ui->topicsTree->selectedItems();
-    QTreeWidgetItem *item = list_of_items[0];
+    QTreeWidgetItem* topic = ui->topicsTree->currentItem();
+
+    if (topic == nullptr)
+    {
+        return;
+    }
+    QString top_name = topic->text(0);
+    topic = topic->parent();
+    while (topic != nullptr)
+    {
+        // Iterate upwards through the topic tree to get the full path to the selected topic
+        top_name = topic->text(0) + QString::fromStdString("/") + top_name;
+        topic = topic->parent();
+    }
+    ui->text_TopicDetail->setText(top_name);
+
+    // Fetch the topic history from the backend
+    std::vector<std::pair<std::string, std::string>> topic_history = app.get_topic_history(top_name.toStdString());
 
     // Check if the data is image
-    QByteArray buffer = QByteArray::fromBase64(item->text(2).toStdString().data(), QByteArray::Base64Encoding);
+    const char * data = topic_history.back().second.data();
+    QByteArray buffer = QByteArray::fromRawData(data, topic_history.back().second.length());
     QPixmap pix_map = QPixmap();
     pix_map.loadFromData(buffer);
 
@@ -368,7 +386,7 @@ void ConnectedWindow::showFullMessage()
     else if (buffer.length() > 0)
     {
         QLabel *label = new QLabel();
-        label->setText(item->text(2));
+        label->setText(QString::fromStdString(topic_history.back().second));
         label->setMinimumWidth(500);
         label->setMinimumHeight(500);
         label->show();        
