@@ -283,7 +283,7 @@ void ConnectedWindow::subscribeSuccess()
 
 // TODO Display it properly somewhere
 void ConnectedWindow::subscribeFailed() {
-    ui->disconnectButton->setText("Sub Failed");
+    ui->subfailedLabel->setText("Sub Failed");
 }
 
 void ConnectedWindow::createMessage()

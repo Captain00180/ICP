@@ -41,26 +41,17 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="5" column="1">
-      <widget class="QPushButton" name="DeleteButton">
+     <item row="1" column="3">
+      <widget class="QLineEdit" name="input_ServerName">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>50</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Delete</string>
-       </property>
       </widget>
      </item>
-     <item row="5" column="3">
+     <item row="4" column="3">
       <widget class="QPushButton" name="ConnectButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -79,13 +70,22 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
-      <widget class="QLineEdit" name="input_ServerName">
+     <item row="4" column="1">
+      <widget class="QPushButton" name="DeleteButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Delete</string>
        </property>
       </widget>
      </item>
@@ -136,28 +136,6 @@
       </spacer>
      </item>
      <item row="2" column="1">
-      <widget class="QLabel" name="text_RestoreSession">
-       <property name="font">
-        <font>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Restore last session</string>
-       </property>
-       <property name="margin">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="3">
-      <widget class="QCheckBox" name="lastSessionCheck">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
       <widget class="QPushButton" name="SaveButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -179,7 +157,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -211,7 +189,7 @@
        </property>
       </spacer>
      </item>
-     <item row="5" column="2">
+     <item row="4" column="2">
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -224,7 +202,7 @@
        </property>
       </spacer>
      </item>
-     <item row="3" column="3">
+     <item row="2" column="3">
       <widget class="QLabel" name="text_error">
        <property name="font">
         <font>

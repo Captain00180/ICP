@@ -59,4 +59,4 @@ class Thermometer: public Device
         void generateStatus() override;
 };
 
-#endif //THERMOMETER
+#endif //THERMOMETER_H
