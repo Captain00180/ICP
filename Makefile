@@ -15,8 +15,8 @@ run: build
 run-simulator: build
 	cd src/traffic_simulator; ./traffic_simulator traffic_simulator.config
 
-pack:
-	zip -r 1-xjanus11-xhurta04.zip Makefile Doxyfile README.txt examples/* src/*.h src/*.cpp src/gui/*.h src/gui/*.cpp src/gui/*.ui src/gui/*.pro src/traffic_simulator/*.h src/traffic_simulator/*.cpp src/traffic_simulator/*.pro src/traffic_simulator/*.config
+pack: clean
+	zip -r 1-xhurta04-xjanus11.zip Makefile Doxyfile README.txt examples/* src/*.h src/*.cpp src/gui/*.h src/gui/*.cpp src/gui/*.ui src/gui/*.pro src/traffic_simulator/*.h src/traffic_simulator/*.cpp src/traffic_simulator/*.pro src/traffic_simulator/*.config
 
 doxygen: Doxyfile
 	doxygen Doxyfile
