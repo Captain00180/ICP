@@ -16,8 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setFixedSize(900,410);
 
-    // TODO remove
-    ui->input_ServerName->setText("localhost:1883");
 
     QObject::connect(
                 ui->SaveButton, &QPushButton::clicked,

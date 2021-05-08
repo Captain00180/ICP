@@ -5,7 +5,7 @@
  */
 #include "ApplicationLogic.h"
 
-#define TOPIC_HISTORY_RANGE 5
+#define TOPIC_HISTORY_RANGE 5 /**< Defines how many messages will be saved in a topic history */
 
 void ApplicationLogic::create_client(const std::string &server) {
     delete_client();
@@ -41,19 +41,16 @@ void ApplicationLogic::delete_con_opts() {
 }
 
 int ApplicationLogic::connect() {
-    std::cout << "Connecting to the server..." << std::flush;
     try {
         active_client_->connect(*active_con_opts, nullptr, *active_callback_)->wait();
     }
     catch (const mqtt::exception& exc) {
         // Connection attempt was unsuccessful
-        std::cerr << "\nError: Unable to connect to MQTT server: \t" << exc << std::endl;
         return 1;
     }
     if (!active_client_->is_connected())
     {
         // Connection attempt was unsuccessful
-        std::cerr << "\nError: Unable to connect to MQTT server" << std::endl;
         return 1;
     }
     // Client is connected to a server
@@ -61,14 +58,11 @@ int ApplicationLogic::connect() {
 }
 
 int ApplicationLogic::disconnect() {
-    std::cout << "Disconnecting from the MQTT server..." << std::endl << std::flush;
     active_client_->disconnect()->wait();
     if (active_client_->is_connected())
     {
-        std::cerr << "Error: Couldn't disconnect\n";
         return 1;
     }
-    std::cout << "Disconnect successful" << std::endl;
     return 0;
 }
 

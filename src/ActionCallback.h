@@ -36,13 +36,7 @@ class ActionCallback : public QObject, public virtual mqtt::callback, public vir
 
     /**
      * Connected callback - Triggers when the client connects to a broker
-     */
-    void connected(const std::string& /*cause*/) override;
-
-    /**
-     * Connected callback - Triggers when the client connects to a broker
      * Attempts to reconnect a number of times
-     * TODO signal the frontend
      */
     void connection_lost(const std::string& /*cause*/) override;
 
@@ -52,19 +46,10 @@ class ActionCallback : public QObject, public virtual mqtt::callback, public vir
      */
     void message_arrived(mqtt::const_message_ptr msg) override;
 
-    /**
-     * Delivery complete callback - Triggers when a message is successfully delivered
-     * @param tok Action token, holding information about the action
-     */
-    void delivery_complete(mqtt::delivery_token_ptr tok) override;
 
     // Signals which are emitted during their corresponding callbacks
     // They're connected to slots in frontend
 signals:
-    /**
-     * Connection failed signal is emitted when client loses connection
-     */
-    void connection_failed();
     /**
      * Subscribe success signal is emitted when client successfully subscribes to a topic
      */

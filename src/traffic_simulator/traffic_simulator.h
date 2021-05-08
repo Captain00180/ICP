@@ -15,4 +15,4 @@
 
 #include "traffic_config.h"
 
-#endif //TRAFFIC_SIMULATOR
+#endif //TRAFFIC_SIMULATOR_H
