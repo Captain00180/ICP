@@ -74,6 +74,12 @@ public:
     void topicSelected();
 
     /**
+     * Shows the full text of an item or shows the image, the item contains, in a new window.
+     * 
+     */
+    void showFullMessage();
+
+    /**
      * Saves the snapshot of the MQTT tree topics.
      * Users is asked to provide a directory, where the snapshot will be saved to.
      * Snapshot contains folders representing topics. If a topic contained any data, the data is saved to a payload.txt file

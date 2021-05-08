@@ -37,6 +37,10 @@ ConnectedWindow::ConnectedWindow(QString serverName, ApplicationLogic& appLogic,
             this, &ConnectedWindow::topicSelected);
 
     QObject::connect(
+            ui->topicsTree, &QTreeWidget::itemDoubleClicked,
+            this, &ConnectedWindow::showFullMessage);
+
+    QObject::connect(
             ui->copyTopicButton, &QPushButton::clicked,
             this, &ConnectedWindow::copyTopicName);
 
@@ -340,5 +344,33 @@ void ConnectedWindow::saveSnapshot()
         }
 
         ++it;   // Next item
+    }
+}
+
+void ConnectedWindow::showFullMessage()
+{
+    // Get selected item
+    QList<QTreeWidgetItem *> list_of_items = ui->topicsTree->selectedItems();
+    QTreeWidgetItem *item = list_of_items[0];
+
+    // Check if the data is image
+    QByteArray buffer = QByteArray::fromBase64(item->text(2).toStdString().data(), QByteArray::Base64Encoding);
+    QPixmap pix_map = QPixmap();
+    pix_map.loadFromData(buffer);
+
+    // Show a new window containing the whole text or the image.
+    if (!pix_map.toImage().isNull())
+    {
+        QLabel *label = new QLabel();
+        label->setPixmap(pix_map);
+        label->show();
+    }
+    else if (buffer.length() > 0)
+    {
+        QLabel *label = new QLabel();
+        label->setText(item->text(2));
+        label->setMinimumWidth(500);
+        label->setMinimumHeight(500);
+        label->show();        
     }
 }
