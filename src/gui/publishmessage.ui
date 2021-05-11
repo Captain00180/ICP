@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- @file publishmessage.ui -->
+<!-- UI file for the publish message window of the application -->
+<!-- UI designed by Filip Januška and generated with Qt Creator -->
+
 <ui version="4.0">
  <class>PublishMessage</class>
  <widget class="QMainWindow" name="PublishMessage">

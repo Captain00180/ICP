@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- @file mainwindow.ui -->
+<!-- UI file for the initial main window of the application -->
+<!-- UI designed by Filip Januška and generated with Qt Creator -->
+
+
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
