@@ -3,7 +3,6 @@
 <!-- UI file for the initial main window of the application -->
 <!-- UI designed by Filip Januška and generated with Qt Creator -->
 
-
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">

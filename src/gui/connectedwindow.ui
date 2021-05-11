@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- @file connectedwindow.ui -->
+<!-- UI file for the connected window of the application -->
+<!-- UI designed by Filip Januška and generated with Qt Creator -->
+
 <ui version="4.0">
  <class>ConnectedWindow</class>
  <widget class="QMainWindow" name="ConnectedWindow">
